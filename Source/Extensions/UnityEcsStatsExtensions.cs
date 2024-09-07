@@ -58,11 +58,11 @@ namespace Nanory.Unity.Entities.Stats
         {
             if (!manager.HasComponent<StatElement>(statContextEntity)) return;
 
-            var statEntites = manager.GetBuffer<StatElement>(statContextEntity).ToNativeArray(Allocator.Temp);
+            var statEntities = manager.GetBuffer<StatElement>(statContextEntity).ToNativeArray(Allocator.Temp);
 
-            for (int i = 0; i < statEntites.Length; i++)
+            for (int i = 0; i < statEntities.Length; i++)
             {
-                var statEntity = statEntites[i].Value;
+                var statEntity = statEntities[i].Value;
                 manager.AddComponent<StatsRemovedEvent>(statEntity);
                 
             }

@@ -42,7 +42,7 @@ namespace Nanory.Unity.Entities.Stats
     /// <summary>
     /// An event that any of the Stat-Entity of <see cref="StatReceiverTag">Stat-Receiver</see> has changed. Always placed on the <see cref="StatReceiverTag">Stat-Receiver</see> entity
     /// </summary>
-    public struct StatRecievedElementEvent : IBufferElementData 
+    public struct StatReceivedElementEvent : IBufferElementData 
     {
         public ComponentType StatType;
 

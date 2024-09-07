@@ -19,9 +19,9 @@ namespace Nanory.Unity.Entities.Stats
             EntityManager.RemoveComponent<StatsRemovedEvent>(_removedStats);
 
             Entities
-                .ForEach((DynamicBuffer<StatRecievedElementEvent> statRecievedElementEvents) =>
+                .ForEach((DynamicBuffer<StatReceivedElementEvent> statReceivedElementEvents) =>
                 {
-                    statRecievedElementEvents.Clear();
+                    statReceivedElementEvents.Clear();
                 })
                 .ScheduleParallel();
         }
