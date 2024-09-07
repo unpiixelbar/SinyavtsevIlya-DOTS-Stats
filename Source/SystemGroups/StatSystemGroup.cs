@@ -3,7 +3,7 @@
 namespace Nanory.Unity.Entities.Stats
 {
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)]
-    public class StatSystemGroup : ComponentSystemGroup
+    public partial class StatSystemGroup : ComponentSystemGroup
     {
     }
 }

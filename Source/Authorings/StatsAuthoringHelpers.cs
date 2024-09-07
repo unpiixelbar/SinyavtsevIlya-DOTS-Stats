@@ -3,15 +3,10 @@ using UnityEngine;
 
 namespace Nanory.Unity.Entities.Stats
 {
-    public static class StatsAuthoringHelpers
-    {
-        public static void Authorize(
-                        GameObject statContexGO,
-                        Entity statContextEntity,
-                        EntityManager manager,
-                        GameObjectConversionSystem conversionSystem)
-        {
-
+    public class StatsAuthoringHelpers : MonoBehaviour {
+        private class StatsAuthoringHelperBaker : Baker<StatsAuthoringHelpers> {
+            public override void Bake(StatsAuthoringHelpers authoring) {
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using Unity.Collections;
 namespace Nanory.Unity.Entities.Stats
 {
     [UpdateInGroup(typeof(StatSystemGroup), OrderFirst = true)]
-    public class UpdateStatReceiverLinkSystem : SystemBase
+    public partial class UpdateStatReceiverLinkSystem : SystemBase
     {
         private EntityQuery _changeStatsRequests;
         private EntityQuery _removeStatsRequests;

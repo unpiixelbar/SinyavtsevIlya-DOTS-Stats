@@ -1,6 +1,5 @@
 ﻿using Unity.Entities;
 using UnityEngine;
-using System;
 
 namespace Nanory.Unity.Entities.Stats
 {
@@ -8,31 +7,38 @@ namespace Nanory.Unity.Entities.Stats
     /// Base Authoring for all Stat Components. 
     /// </summary>
     /// <typeparam name="TStatComponent"></typeparam>
-    public abstract class StatAuthoringBase<TStatComponent> : MonoBehaviour, IStatAuthoring, IConvertGameObjectToEntity where TStatComponent : struct, IComponentData
+    public abstract class StatAuthoringBase<TStatComponent> : MonoBehaviour, IStatAuthoring where TStatComponent : unmanaged, IStatComponent
     {
         [SerializeField] StatOpType _opType;
 
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        private class StatAuthoringBaseBaker : Baker<StatAuthoringBase<TStatComponent>>
         {
-            var statEntity = dstManager.CreateEntity();
-            dstManager.AddComponentData(statEntity, GetStat());
-
-            if (_opType == StatOpType.Additive)
-                dstManager.AddComponent<AdditiveStatTag>(statEntity);
-            if (_opType == StatOpType.Multiply)
-                dstManager.AddComponent<MultiplyStatTag>(statEntity);
-
-            if (!dstManager.HasComponent<StatElement>(entity))
-                dstManager.AddBuffer<StatElement>(entity);
-
-            var stats = dstManager.GetBuffer<StatElement>(entity);
-
-            stats.Add(new StatElement() { Value = statEntity });
-
-            if (dstManager.HasComponent<StatReceiverTag>(entity))
+            public override void Bake(StatAuthoringBase<TStatComponent> authoring)
             {
-                dstManager.AddSharedComponentData(statEntity, new StatReceiverLink() { Value = entity });
-                dstManager.AddComponentData(entity, GetStat());
+                // var entity = GetEntity(TransformUsageFlags.None);
+                // var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                //
+                // var statEntity = CreateAdditionalEntity(TransformUsageFlags.None);
+                // AddComponent(statEntity, authoring.GetStat());
+                //
+                // if (authoring._opType == StatOpType.Additive) {
+                //     AddComponent<AdditiveStatTag>(statEntity);
+                // }
+                //
+                // if (authoring._opType == StatOpType.Multiply) {
+                //     AddComponent<MultiplyStatTag>(statEntity);
+                // }
+                //
+                // var stats = entityManager.HasBuffer<StatElement>(entity)
+                //     ? entityManager.GetBuffer<StatElement>(entity)
+                //     : AddBuffer<StatElement>(entity);
+                //
+                // stats.Add(new StatElement() { Value = statEntity });
+                //
+                // if (entityManager.HasComponent<StatReceiverTag>(entity)) {
+                //     AddSharedComponent(statEntity, new StatReceiverLink() { Value = entity });
+                //     AddComponent(entity, authoring.GetStat());
+                // }
             }
         }
 

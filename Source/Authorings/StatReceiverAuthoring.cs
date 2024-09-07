@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Unity.Entities;
+﻿using Unity.Entities;
 using UnityEngine;
 
 namespace Nanory.Unity.Entities.Stats
@@ -8,12 +7,13 @@ namespace Nanory.Unity.Entities.Stats
     /// Authoring for <see cref="StatReceiverTag">Stat Receiver Tag</see>
     /// </summary>
     [DisallowMultipleComponent]
-    public class StatReceiverAuthoring : MonoBehaviour, IConvertGameObjectToEntity
-    {
-        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
-        {
-            dstManager.AddComponent<StatReceiverTag>(entity);
-            dstManager.AddBuffer<StatRecievedElementEvent>(entity);
+    public class StatReceiverAuthoring : MonoBehaviour {
+        private class StatReceiverAuthoringBaker : Baker<StatReceiverAuthoring> {
+            public override void Bake(StatReceiverAuthoring authoring) {
+                var entity = GetEntity(TransformUsageFlags.None);
+                AddComponent<StatReceiverTag>(entity);
+                AddBuffer<StatReceivedElementEvent>(entity);
+            }
         }
     }
 }

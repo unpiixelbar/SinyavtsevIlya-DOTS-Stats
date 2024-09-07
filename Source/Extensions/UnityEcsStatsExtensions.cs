@@ -45,9 +45,9 @@ namespace Nanory.Unity.Entities.Stats
                 var statReceiverLink = new StatReceiverLink() { Value = statReceiverEntity };
 
                 if (manager.HasComponent<StatReceiverLink>(statContextEntity))
-                    manager.SetSharedComponentData(statEntity, statReceiverLink);
+                    manager.SetSharedComponentManaged(statEntity, statReceiverLink);
                 else
-                    manager.AddSharedComponentData(statEntity, statReceiverLink);
+                    manager.SetSharedComponentManaged(statEntity, statReceiverLink);
             }
         }
         /// <summary>

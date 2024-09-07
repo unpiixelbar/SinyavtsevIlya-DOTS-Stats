@@ -1,10 +1,9 @@
-﻿using Unity.Entities;
-using Unity.Collections;
-using Nanory.Unity.Entities.Unsafe;
+﻿using Unity.Collections;
+using Unity.Entities;
 
 namespace Nanory.Unity.Entities.Stats
 {
-    public class CalculateStatSystem<TStatComponent> : SystemBase where TStatComponent : struct, IComponentData
+    public partial class CalculateStatSystem<TStatComponent> : SystemBase where TStatComponent : unmanaged, IStatComponent
     {
         private EntityQuery _changedStats;
         private EntityQuery _removedStats;
@@ -40,7 +39,7 @@ namespace Nanory.Unity.Entities.Stats
 
             for (var idx = 0; idx < changedStatsEntities.Length; idx++)
             {
-                var statReceiver = EntityManager.GetSharedComponentData<StatReceiverLink>(changedStatsEntities[idx]);
+                var statReceiver = EntityManager.GetSharedComponentManaged<StatReceiverLink>(changedStatsEntities[idx]);
                 Calculate(statReceiver);
             }
 
@@ -51,8 +50,8 @@ namespace Nanory.Unity.Entities.Stats
             for (var idx = 0; idx < removedStatsEntities.Length; idx++)
             {
                 var statEntity = removedStatsEntities[idx];
-                var statReceiver = EntityManager.GetSharedComponentData<StatReceiverLink>(statEntity);
-                EntityManager.SetSharedComponentData(statEntity, new StatReceiverLink() { Value = Entity.Null });
+                var statReceiver = EntityManager.GetSharedComponentManaged<StatReceiverLink>(statEntity);
+                EntityManager.SetSharedComponentManaged(statEntity, new StatReceiverLink() { Value = Entity.Null });
                 Calculate(statReceiver);
             }
 
@@ -63,7 +62,7 @@ namespace Nanory.Unity.Entities.Stats
         {
             var buffer = new EntityCommandBuffer(Allocator.Temp);
 
-            var receiverStat = GetComponent<TStatComponent>(statReceiver.Value);
+            var receiverStat = EntityManager.GetComponentData<TStatComponent>(statReceiver.Value);
 
             _additiveStats.SetSharedComponentFilter(statReceiver);
             _multiplyStats.SetSharedComponentFilter(statReceiver);
@@ -75,9 +74,8 @@ namespace Nanory.Unity.Entities.Stats
             for (var statIdx = 0; statIdx < childrenStatEntites.Length; statIdx++)
             {
                 var childStatEntity = childrenStatEntites[statIdx];
-                var stat = GetComponent<TStatComponent>(childStatEntity);
-                ref var value = ref InterpretUnsafeUtility.Retrieve<TStatComponent, float>(ref stat);
-                totalStatValue += value;
+                var stat = SystemAPI.GetComponent<TStatComponent>(childStatEntity);
+                totalStatValue += stat.Value;
             }
             childrenStatEntites.Dispose();
 
@@ -86,21 +84,19 @@ namespace Nanory.Unity.Entities.Stats
             for (var statIdx = 0; statIdx < multiplyChildrenStatEntities.Length; statIdx++)
             {
                 var childStatEntity = multiplyChildrenStatEntities[statIdx];
-                var stat = GetComponent<TStatComponent>(childStatEntity);
-                ref var value = ref InterpretUnsafeUtility.Retrieve<TStatComponent, float>(ref stat);
-                totalStatValue *= value;
+                var stat = SystemAPI.GetComponent<TStatComponent>(childStatEntity);
+                totalStatValue *= stat.Value;
             }
             multiplyChildrenStatEntities.Dispose();
 
-            ref var receiverStatValue = ref InterpretUnsafeUtility.Retrieve<TStatComponent, float>(ref receiverStat);
-            receiverStatValue = totalStatValue;
+            receiverStat.Value = totalStatValue;
 
-            buffer.AppendToBuffer(statReceiver.Value, new StatRecievedElementEvent() 
+            buffer.AppendToBuffer(statReceiver.Value, new StatReceivedElementEvent()
             {
                 StatType = ComponentType.ReadOnly<TStatComponent>() 
             });
 
-            SetComponent(statReceiver.Value, receiverStat);
+            SystemAPI.SetComponent(statReceiver.Value, receiverStat);
 
             buffer.Playback(EntityManager);
         }
