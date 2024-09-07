@@ -15,30 +15,30 @@ namespace Nanory.Unity.Entities.Stats
         {
             public override void Bake(StatAuthoringBase<TStatComponent> authoring)
             {
-                // var entity = GetEntity(TransformUsageFlags.None);
-                // var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                //
-                // var statEntity = CreateAdditionalEntity(TransformUsageFlags.None);
-                // AddComponent(statEntity, authoring.GetStat());
-                //
-                // if (authoring._opType == StatOpType.Additive) {
-                //     AddComponent<AdditiveStatTag>(statEntity);
-                // }
-                //
-                // if (authoring._opType == StatOpType.Multiply) {
-                //     AddComponent<MultiplyStatTag>(statEntity);
-                // }
-                //
-                // var stats = entityManager.HasBuffer<StatElement>(entity)
-                //     ? entityManager.GetBuffer<StatElement>(entity)
-                //     : AddBuffer<StatElement>(entity);
-                //
-                // stats.Add(new StatElement() { Value = statEntity });
-                //
-                // if (entityManager.HasComponent<StatReceiverTag>(entity)) {
-                //     AddSharedComponent(statEntity, new StatReceiverLink() { Value = entity });
-                //     AddComponent(entity, authoring.GetStat());
-                // }
+                var entity = GetEntity(TransformUsageFlags.None);
+                var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                
+                var statEntity = CreateAdditionalEntity(TransformUsageFlags.None);
+                AddComponent(statEntity, authoring.GetStat());
+                
+                if (authoring._opType == StatOpType.Additive) {
+                    AddComponent<AdditiveStatTag>(statEntity);
+                }
+                
+                if (authoring._opType == StatOpType.Multiply) {
+                    AddComponent<MultiplyStatTag>(statEntity);
+                }
+                
+                var stats = entityManager.HasBuffer<StatElement>(entity)
+                    ? entityManager.GetBuffer<StatElement>(entity)
+                    : AddBuffer<StatElement>(entity);
+                
+                stats.Add(new StatElement() { Value = statEntity });
+                
+                if (entityManager.HasComponent<StatReceiverTag>(entity)) {
+                    AddSharedComponent(statEntity, new StatReceiverLink() { Value = entity });
+                    AddComponent(entity, authoring.GetStat());
+                }
             }
         }
 
